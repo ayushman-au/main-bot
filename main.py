@@ -25,7 +25,7 @@ async def joke(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 # Normal case: direct joke
                 await update.message.reply_text(joke_text)
         else:
-            await update.message.reply_text("😅 Sorry bro, joke API is down rn.")
+            await update.message.reply_text("😅 lol I'm kidding.")
     except Exception as e:
         await update.message.reply_text(f"Error fetching joke: {e}")
 
@@ -74,7 +74,7 @@ async def pickup(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 # Normal case: direct pickup line
                 await update.message.reply_text(line)
         else:
-            await update.message.reply_text("😅 Sorry bro, pickup API is down.")
+            await update.message.reply_text("I love you my love ❤️.")
     except Exception as e:
         await update.message.reply_text(f"sorry, i am busy: {e}")
 
