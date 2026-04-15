@@ -138,7 +138,7 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif "hey" in msg or "hyy" in msg:
         await update.message.reply_text("hey, wassup buddy")
 
-    elif "Casanova" in msg:
+    elif "casanova" in msg:
         await update.message.reply_text("Go on.. I've got your attention.")
 
     elif "wassup" in msg or "hru" in msg or "wbu" in msg or "how are you" in msg:
