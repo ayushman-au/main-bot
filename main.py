@@ -25,7 +25,7 @@ async def joke(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 # Normal case: direct joke
                 await update.message.reply_text(joke_text)
         else:
-            await update.message.reply_text("😅 lol I'm kidding.")
+            await update.message.reply_text("😅 I'm not in the mood.")
     except Exception as e:
         await update.message.reply_text(f"Error fetching joke: {e}")
 
@@ -74,7 +74,7 @@ async def pickup(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 # Normal case: direct pickup line
                 await update.message.reply_text(line)
         else:
-            await update.message.reply_text("I love you my love ❤️.")
+            await update.message.reply_text("I'm not in the mood.")
     except Exception as e:
         await update.message.reply_text(f"sorry, i am busy: {e}")
 
@@ -177,7 +177,7 @@ async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Detected language: {detected_lang}\nEnglish: {translated}"
             )
         else:
-            await update.message.reply_text("😅 Translation API down hai bro")
+            await update.message.reply_text("😅 I'm not in the mood bruh.")
     except Exception as e:
         await update.message.reply_text(f"Error translating: {e}")
 
@@ -194,7 +194,7 @@ async def roast(update: Update, context: ContextTypes.DEFAULT_TYPE):
             else:
                 await update.message.reply_text(roast_line)
         else:
-            await update.message.reply_text("Please fuckk off 💀")
+            await update.message.reply_text("I'm not in the mood.")
     except Exception as e:
         await update.message.reply_text(f"Error fetching roast: {e}")
 
