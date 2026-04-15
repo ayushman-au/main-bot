@@ -49,6 +49,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "If you use /joke while replying to someone’s message,\n" 
         "the bot will reply to that message with a joke.\n"
         "/pickup - Get a pickup line \n"
+        "/roast - for roast someone \n"
         "Same rule — use /pickup in reply to a message, and the bot will send a pickup line as a reply. 😉\n"
         "/translate <msg> - it will translate any language and also hinglish msg in english lang.\n"
         "/talk <message> - Casanova repeats your message\n"
@@ -193,7 +194,7 @@ async def roast(update: Update, context: ContextTypes.DEFAULT_TYPE):
             else:
                 await update.message.reply_text(roast_line)
         else:
-            await update.message.reply_text("😅 Sorry bro, roast API is down.")
+            await update.message.reply_text("Please fuckk off 💀")
     except Exception as e:
         await update.message.reply_text(f"Error fetching roast: {e}")
 
