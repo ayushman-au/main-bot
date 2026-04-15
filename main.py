@@ -180,6 +180,24 @@ async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"Error translating: {e}")
 
+async def roast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        response = requests.get("https://api.popcat.xyz/roast")
+        if response.status_code == 200:
+            data = response.json()
+            roast_line = data["roast"]
+
+            # Agar user ne kisi message ko reply kiya hai
+            if update.message.reply_to_message:
+                await update.message.reply_to_message.reply_text(roast_line)
+            else:
+                await update.message.reply_text(roast_line)
+        else:
+            await update.message.reply_text("😅 Sorry bro, roast API is down.")
+    except Exception as e:
+        await update.message.reply_text(f"Error fetching roast: {e}")
+
+
 
 
 
@@ -211,6 +229,8 @@ if __name__ == "__main__":
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
     app.add_error_handler(error_handler)
     app.add_handler(CommandHandler("translate", translate))
+    app.add_handler(CommandHandler("roast", roast))
+
 
     #app.add_handler(CommandHandler("compliment", compliment))
     
