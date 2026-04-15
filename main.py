@@ -2,8 +2,6 @@ import os
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-from keep_alive import keep_alive
-keep_alive()
 
 #from pytube import Search, YouTube
 
