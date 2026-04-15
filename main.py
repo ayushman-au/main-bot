@@ -183,46 +183,69 @@ async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"Error translating: {e}")
 
 async def roast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    fallback_roasts = [
+        "Bro, even Google can’t find your talent. 😂",
+        "Your brain has less RAM than my calculator. 🧠",
+        "You’re proof that evolution can go in reverse. 🐒",
+        "You’re like a broken pencil… pointless. ✏️",
+        "You’re the reason shampoo bottles have instructions. 🧴",
+        "You bring Wi-Fi vibes… always weak. 📶",
+        "Even autocorrect can’t fix you. 🤦",
+        "You’re like software updates… nobody wants you, but you keep coming. 💻",
+        "You’re like a cloud… when you disappear, it’s a beautiful day. ☀️",
+        "You have something on your face… oh wait, that’s just your personality. 😏"
+    ]
+
     try:
         response = requests.get("https://api.popcat.xyz/roast")
         if response.status_code == 200:
             data = response.json()
             roast_line = data["roast"]
-
-            # Agar user ne kisi message ko reply kiya hai
-            if update.message.reply_to_message:
-                await update.message.reply_to_message.reply_text(roast_line)
-            else:
-                await update.message.reply_text(roast_line)
         else:
-            await update.message.reply_text("I'm not in the mood.")
-    except Exception as e:
-        await update.message.reply_text(f"Error fetching roast: {e}")
+            roast_line = random.choice(fallback_roasts)
+    except Exception:
+        roast_line = random.choice(fallback_roasts)
 
+    # Agar user ne kisi message pe reply karke /roast likha hai
+    if update.message.reply_to_message:
+        sender_name = update.message.from_user.first_name
+        text = f"{sender_name} says: {roast_line}"
+        await update.message.reply_to_message.reply_text(text)
+    else:
+        await update.message.reply_text(roast_line)
+
+        
 async def compliment(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    fallback_compliments = [
+        "You light up the room 🌟",
+        "Your smile is contagious 😁",
+        "You’re smarter than you think 🧠",
+        "You make people feel special 💖",
+        "You’re a vibe ✨",
+        "You have a great sense of humor 😂",
+        "You’re more talented than you realize 🎨",
+        "You make everything better just by being there 🌈",
+        "You’re someone people can count on 🤝",
+        "You’re cooler than the other side of the pillow ❄️"
+    ]
+
     try:
         response = requests.get("https://api.popcat.xyz/compliment")
         if response.status_code == 200:
             data = response.json()
             compliment_line = data["compliment"]
-
-            # Agar user ne kisi message pe reply karke /compliment likha hai
-            if update.message.reply_to_message:
-                sender_name = update.message.from_user.first_name  # tumhara naam
-                text = f"{sender_name} says: {compliment_line}"
-                await update.message.reply_to_message.reply_text(text)
-            else:
-                # Normal case: direct compliment
-                await update.message.reply_text(compliment_line)
         else:
-            await update.message.reply_text("😅 I'm not in the mood.")
-    except Exception as e:
-        await update.message.reply_text(f"Error fetching compliment: {e}")
+            compliment_line = random.choice(fallback_compliments)
+    except Exception:
+        compliment_line = random.choice(fallback_compliments)
 
-
-
-
-
+    # Agar user ne kisi message pe reply karke /compliment likha hai
+    if update.message.reply_to_message:
+        sender_name = update.message.from_user.first_name
+        text = f"{sender_name} says: {compliment_line}"
+        await update.message.reply_to_message.reply_text(text)
+    else:
+        await update.message.reply_text(compliment_line)
 
 
 # /talk command
