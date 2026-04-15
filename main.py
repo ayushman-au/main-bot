@@ -50,6 +50,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "the bot will reply to that message with a joke.\n"
         "/pickup - Get a pickup line \n"
         "/roast - for roast someone \n"
+        "/compliment - for compliment to someone \n"
         "Same rule — use /pickup in reply to a message, and the bot will send a pickup line as a reply. 😉\n"
         "/translate <msg> - it will translate any language and also hinglish msg in english lang.\n"
         "/talk <message> - Casanova repeats your message\n"
@@ -198,6 +199,27 @@ async def roast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"Error fetching roast: {e}")
 
+async def compliment(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        response = requests.get("https://api.popcat.xyz/compliment")
+        if response.status_code == 200:
+            data = response.json()
+            compliment_line = data["compliment"]
+
+            # Agar user ne kisi message pe reply karke /compliment likha hai
+            if update.message.reply_to_message:
+                sender_name = update.message.from_user.first_name  # tumhara naam
+                text = f"{sender_name} says: {compliment_line}"
+                await update.message.reply_to_message.reply_text(text)
+            else:
+                # Normal case: direct compliment
+                await update.message.reply_text(compliment_line)
+        else:
+            await update.message.reply_text("😅 I'm not in the mood.")
+    except Exception as e:
+        await update.message.reply_text(f"Error fetching compliment: {e}")
+
+
 
 
 
@@ -231,8 +253,9 @@ if __name__ == "__main__":
     app.add_error_handler(error_handler)
     app.add_handler(CommandHandler("translate", translate))
     app.add_handler(CommandHandler("roast", roast))
+    app.add_handler(CommandHandler("compliment", compliment))
 
-
+    
     #app.add_handler(CommandHandler("compliment", compliment))
     
 
