@@ -152,8 +152,8 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     
     else:
-        # 30% chance reply, 70% ignore
-        if random.randint(1, 10) <= 3:
+        # 20% chance reply, 80% ignore
+        if random.randint(1, 10) <= 2:
             reply = random.choice(human_replies)
             await update.message.reply_text(reply)
         else:
