@@ -60,71 +60,32 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(help_text)
 
 
-
 async def pickup(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
+        # Popcat Pickup Line API
         response = requests.get("https://api.popcat.xyz/pickuplines")
         if response.status_code == 200:
             data = response.json()
             line = data["pickupline"]
-
-            # Agar user ne kisi message ko reply kiya hai
-            if update.message.reply_to_message:
-                await update.message.reply_to_message.reply_text(line)
-            else:
-                # Normal case: direct pickup line
-                await update.message.reply_text(line)
         else:
-            await update.message.reply_text("I'm not in the mood.")
+            line = "I'm not in the mood right now 😅"
     except Exception as e:
-        await update.message.reply_text(f"sorry, i am busy: {e}")
+        line = f"Error fetching pickup line: {e}"
+
+    # Agar user ne kisi message pe reply karke /pickup likha hai
+    if update.message.reply_to_message:
+        sender_name = update.message.from_user.first_name
+        text = f"{sender_name} says: {line}"
+        await update.message.reply_to_message.reply_text(text)
+    else:
+        # Normal case: direct pickup line with user name
+        sender_name = update.message.from_user.first_name
+        await update.message.reply_text(f"{sender_name} says: {line}")
+
 
 
 async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message.text.lower()
-
-    human_replies = [
-    "How are you?❤️",
-    "Really?🤔",
-    "No way",
-    "I’m at clg right now.🏫",
-    "You're kinda fun.",
-    "Okay bro, noted.📝",
-    "Yo, what’s up?",
-    "Hmm, interesting.",
-    "Alright, catch you later.",
-    "Don't worry I'll carry this conversation.",
-    "Careful, I notice everything.",
-    "I didn’t expect that.",
-    "For real?",
-    "Not everyone gets my attention. you're lucky.",
-    "Interesting.. go on.",
-    "You came here for a chat or for me?",
-    "I’m chilling rn.",
-    "I think you're hiding something",
-    "do you love me?",
-    "why don't you love me?",
-    "That’s wild 😂",
-    "I hear you.",
-    "I'll pretend I didn't hear that.",
-    "Careful I might start liking this conversation",
-    "I feel you.",
-    "what did you say?",
-    "Okay, I’ll remember that.",
-    "Careful I'm addictive",
-    "you know who i am",
-    "Damn bro, cracked me up 🤣",
-    "casanova loves you",
-    "wth",
-    "hey!, lonely person",
-    "who is a gay here?.",
-    "you know what? I've got four gf.😏",
-    "I don't care.",
-    "I'm Casanova.",
-    "Everyone loves me",
-    "we don't talk anymore."
-
-]
 
 
     if "hi" in msg or "hello" in msg:
@@ -149,15 +110,20 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif "gay" in  msg or " you are gay" in msg:
         await update.message.reply_text("I'm lesbian - I like gurls.")
 
-    
-    
     else:
-        # 20% chance reply, 80% ignore
+        # Random human-like reply from file (20% chance)
         if random.randint(1, 10) <= 2:
-            reply = random.choice(human_replies)
-            await update.message.reply_text(reply)
+            try:
+                with open("replies.txt", "r", encoding="utf-8") as f:
+                    human_replies = f.read().splitlines()
+                reply = random.choice(human_replies)
+                await update.message.reply_text(reply)
+            except Exception:
+                await update.message.reply_text("Bro, I’m speechless rn 😅")
         else:
-            print(f"casanova ignored: {msg}")
+            print(f"Casanova ignored: {msg}")
+
+    
 
 async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Get user message after /translate
@@ -182,29 +148,24 @@ async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"Error translating: {e}")
 
-async def roast(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    fallback_roasts = [
-        "Bro, even Google can’t find your talent. 😂",
-        "Your brain has less RAM than my calculator. 🧠",
-        "You’re proof that evolution can go in reverse. 🐒",
-        "You’re like a broken pencil… pointless. ✏️",
-        "You’re the reason shampoo bottles have instructions. 🧴",
-        "You bring Wi-Fi vibes… always weak. 📶",
-        "Even autocorrect can’t fix you. 🤦",
-        "You’re like software updates… nobody wants you, but you keep coming. 💻",
-        "You’re like a cloud… when you disappear, it’s a beautiful day. ☀️",
-        "You have something on your face… oh wait, that’s just your personality. 😏"
-    ]
 
+async def roast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
+        # Try Popcat API first
         response = requests.get("https://api.popcat.xyz/roast")
         if response.status_code == 200:
             data = response.json()
             roast_line = data["roast"]
         else:
-            roast_line = random.choice(fallback_roasts)
+            # Fallback: read from roasts.txt
+            with open("roasts.txt", "r", encoding="utf-8") as f:
+                roast_lines = f.read().splitlines()
+            roast_line = random.choice(roast_lines)
     except Exception:
-        roast_line = random.choice(fallback_roasts)
+        # If API fails completely, fallback to file
+        with open("roasts.txt", "r", encoding="utf-8") as f:
+            roast_lines = f.read().splitlines()
+        roast_line = random.choice(roast_lines)
 
     # Agar user ne kisi message pe reply karke /roast likha hai
     if update.message.reply_to_message:
@@ -213,6 +174,7 @@ async def roast(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_to_message.reply_text(text)
     else:
         await update.message.reply_text(roast_line)
+
 
         
 async def compliment(update: Update, context: ContextTypes.DEFAULT_TYPE):
