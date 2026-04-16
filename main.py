@@ -7,29 +7,29 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 import random  # add this import
 from telegram.ext import MessageHandler, filters
-import requests
+import aiohttp
+with open("roasts.txt", "r", encoding="utf-8") as f:
+    ROAST_LINES = f.read().splitlines()
 
 async def joke(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        response = requests.get("https://official-joke-api.appspot.com/random_joke")
-        if response.status_code == 200:
-            data = response.json()
-            setup = data["setup"]
-            punchline = data["punchline"]
-            joke_text = f"{setup}\n{punchline}"
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://official-joke-api.appspot.com/random_joke") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    setup = data["setup"]
+                    punchline = data["punchline"]
+                    joke_text = f"{setup}\n{punchline}"
+                else:
+                    joke_text = "😅 I'm not in the mood."
 
-            # Agar user ne kisi message ko reply kiya hai
-            if update.message.reply_to_message:
-                await update.message.reply_to_message.reply_text(joke_text)
-            else:
-                # Normal case: direct joke
-                await update.message.reply_text(joke_text)
+        if update.message.reply_to_message:
+            await update.message.reply_to_message.reply_text(joke_text)
         else:
-            await update.message.reply_text("😅 I'm not in the mood.")
+            await update.message.reply_text(joke_text)
+
     except Exception as e:
-        await update.message.reply_text(f"Error fetching joke: {e}")
-
-
+        await update.message.reply_text(f"Error: {e}")
 
 
 
@@ -60,28 +60,27 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(help_text)
 
 
+
+
 async def pickup(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        # Popcat Pickup Line API
-        response = requests.get("https://api.popcat.xyz/pickuplines")
-        if response.status_code == 200:
-            data = response.json()
-            line = data["pickupline"]
-        else:
-            line = "I'm not in the mood right now 😅"
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.popcat.xyz/pickuplines") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    line = data["pickupline"]
+                else:
+                    line = "I'm not in the mood right now 😅"
     except Exception as e:
         line = f"Error fetching pickup line: {e}"
 
-    # Agar user ne kisi message pe reply karke /pickup likha hai
+    sender_name = update.message.from_user.first_name
+
     if update.message.reply_to_message:
-        sender_name = update.message.from_user.first_name
         text = f"{sender_name} says: {line}"
         await update.message.reply_to_message.reply_text(text)
     else:
-        # Normal case: direct pickup line with user name
-        sender_name = update.message.from_user.first_name
         await update.message.reply_text(f"{sender_name} says: {line}")
-
 
 
 async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -126,7 +125,6 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
 
 async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Get user message after /translate
     msg = update.message.text.replace("/translate", "").strip()
 
     if not msg:
@@ -134,40 +132,37 @@ async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     try:
-        # Popcat Translate API (auto-detects language)
-        response = requests.get(f"https://api.popcat.xyz/translate?to=en&text={msg}")
-        if response.status_code == 200:
-            data = response.json()
-            translated = data["translated"]
-            detected_lang = data.get("lang", "unknown")
-            await update.message.reply_text(
-                f"Detected language: {detected_lang}\nEnglish: {translated}"
-            )
-        else:
-            await update.message.reply_text("😅 I'm not in the mood bruh.")
+        async with aiohttp.ClientSession() as session:
+            url = f"https://api.popcat.xyz/translate?to=en&text={msg}"
+            async with session.get(url) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    translated = data["translated"]
+                    detected_lang = data.get("lang", "unknown")
+                    await update.message.reply_text(
+                        f"Detected language: {detected_lang}\nEnglish: {translated}"
+                    )
+                else:
+                    await update.message.reply_text("😅 I'm not in the mood bruh.")
     except Exception as e:
         await update.message.reply_text(f"Error translating: {e}")
 
 
+
 async def roast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        # Try Popcat API first
-        response = requests.get("https://api.popcat.xyz/roast")
-        if response.status_code == 200:
-            data = response.json()
-            roast_line = data["roast"]
-        else:
-            # Fallback: read from roasts.txt
-            with open("roasts.txt", "r", encoding="utf-8") as f:
-                roast_lines = f.read().splitlines()
-            roast_line = random.choice(roast_lines)
+        # Try API first
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.popcat.xyz/roast") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    roast_line = data["roast"]
+                else:
+                    roast_line = random.choice(ROAST_LINES)
     except Exception:
-        # If API fails completely, fallback to file
-        with open("roasts.txt", "r", encoding="utf-8") as f:
-            roast_lines = f.read().splitlines()
-        roast_line = random.choice(roast_lines)
+        # If API fails → fallback to file
+        roast_line = random.choice(ROAST_LINES)
 
-    # Agar user ne kisi message pe reply karke /roast likha hai
     if update.message.reply_to_message:
         sender_name = update.message.from_user.first_name
         text = f"{sender_name} says: {roast_line}"
@@ -176,7 +171,6 @@ async def roast(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(roast_line)
 
 
-        
 async def compliment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     fallback_compliments = [
         "You light up the room 🌟",
@@ -192,14 +186,23 @@ async def compliment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
     try:
-        response = requests.get("https://api.popcat.xyz/compliment")
-        if response.status_code == 200:
-            data = response.json()
-            compliment_line = data["compliment"]
-        else:
-            compliment_line = random.choice(fallback_compliments)
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.popcat.xyz/compliment") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    compliment_line = data["compliment"]
+                else:
+                    compliment_line = random.choice(fallback_compliments)
     except Exception:
         compliment_line = random.choice(fallback_compliments)
+
+    if update.message.reply_to_message:
+        sender_name = update.message.from_user.first_name
+        text = f"{sender_name} says: {compliment_line}"
+        await update.message.reply_to_message.reply_text(text)
+    else:
+        await update.message.reply_text(compliment_line)
+
 
     # Agar user ne kisi message pe reply karke /compliment likha hai
     if update.message.reply_to_message:
@@ -244,6 +247,10 @@ if __name__ == "__main__":
     #app.add_handler(CommandHandler("compliment", compliment))
     
 
+
+
+
+    
 
     print("Casanova bot is running...")
     app.run_polling()
