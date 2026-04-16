@@ -245,10 +245,6 @@ if __name__ == "__main__":
     
 
 
-
-
-    print("Loaded TOKEN:", TOKEN) 
-
     print("Casanova bot is running...")
     app.run_polling()
     
