@@ -109,6 +109,13 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif "gay" in  msg or " you are gay" in msg:
         await update.message.reply_text("I'm lesbian - I like gurls.")
 
+     elif "fine" in  msg:
+        await update.message.reply_text("Fine is good, but not exciting 😄 tell me something better.")
+
+    elif "love" in msg:
+        await update.message.reply_text("No-one loves you except me , Did you get that?")
+
+
     else:
         # Random human-like reply from file (20% chance)
         if random.randint(1, 10) <= 2:
@@ -205,12 +212,7 @@ async def compliment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
     # Agar user ne kisi message pe reply karke /compliment likha hai
-    if update.message.reply_to_message:
-        sender_name = update.message.from_user.first_name
-        text = f"{sender_name} says: {compliment_line}"
-        await update.message.reply_to_message.reply_text(text)
-    else:
-        await update.message.reply_text(compliment_line)
+   
 
 
 # /talk command
