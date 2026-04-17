@@ -109,7 +109,7 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif "gay" in  msg or " you are gay" in msg:
         await update.message.reply_text("I'm lesbian - I like gurls.")
 
-     elif "fine" in  msg:
+     elif "fine" in msg:
         await update.message.reply_text("Fine is good, but not exciting 😄 tell me something better.")
 
     elif "love" in msg:
