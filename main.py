@@ -106,15 +106,14 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif "wassup" in msg or "hru" in msg or "wbu" in msg or "how are you" in msg:
         await update.message.reply_text("I'm cool, wbu?")
 
-    elif "gay" in  msg or " you are gay" in msg:
+        elif "gay" in msg or "you are gay" in msg:
         await update.message.reply_text("I'm lesbian - I like gurls.")
 
-     elif "fine" in msg:
+    elif "fine" in msg:
         await update.message.reply_text("Fine is good, but not exciting 😄 tell me something better.")
 
     elif "love" in msg:
         await update.message.reply_text("No-one loves you except me , Did you get that?")
-
 
     else:
         # Random human-like reply from file (20% chance)
