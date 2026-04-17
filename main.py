@@ -216,9 +216,13 @@ async def compliment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # /talk command
 async def talk(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message.text.replace("/talk", "").strip()
-    reply = f"Bro, Casanova says: {msg}"
-    await update.message.reply_text(reply)
 
+    if not msg:
+        reply = "Bro, Casanova says nothing 😶"
+    else:
+        reply = f"Bro, Casanova says: {msg}"
+
+    await update.message.reply_text(reply)
 
 # Error handler
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
