@@ -87,8 +87,7 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message.text.lower()
 
 
-    if "hi" in msg or "hello" in msg:
-        await update.message.reply_text("Hey buddy, how’s it going?")
+   
     elif "bye" in msg or "byy" in msg:
         await update.message.reply_text("leaving already? That was quick.")
     elif "lol" in msg or "lmao" in msg:
@@ -97,26 +96,21 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif "aven" in msg:
         await update.message.reply_text("Aven please reply bruh")
 
-    elif "hey" in msg or "hyy" in msg:
+    elif "hey" in msg or "hello" in msg:
         await update.message.reply_text("hey, wassup buddy")
 
     elif "casanova" in msg:
         await update.message.reply_text("Go on.. I've got your attention.")
-    elif "wassup" in msg or "hru" in msg or "wbu" in msg or "how are you" in msg:
-        await update.message.reply_text("I'm cool, wbu?")
 
     elif "gay" in msg or "you are gay" in msg:
          await update.message.reply_text("I'm lesbian - I like gurls.")
-
-    elif "fine" in msg:
-         await update.message.reply_text("Fine is good, but not exciting 😄 tell me something better.")
 
     elif "love" in msg:
          await update.message.reply_text("No-one loves you except me , Did you get that?")
     
     else:
         # Random human-like reply from file (20% chance)
-        if random.randint(1, 10) <= 1:
+        if random.randint(1, 10) <= 0:
             try:
                 with open("replies.txt", "r", encoding="utf-8") as f:
                     human_replies = f.read().splitlines()
