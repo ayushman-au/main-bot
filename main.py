@@ -54,7 +54,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Same rule — use /pickup in reply to a message, and the bot will send a pickup line as a reply. 😉\n"
         "/translate <msg> - it will translate any language and also hinglish msg in english lang.\n"
         "/talk <message> - Casanova repeats your message\n"
-        "Just chat normally - I may auto-reply like a human\n\n"
+        "Just chat normally - It may auto-reply like a human\n\n"
+        "For now auto reply is off for some reason \n\n"
         "Tip: Reply to a message with /joke or /pickup to send it directly as a reply!"
     )
     await update.message.reply_text(help_text)
