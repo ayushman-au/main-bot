@@ -21,3 +21,5 @@ typing_extensions==4.15.0
 urllib3==2.6.3
 yt-dlp==2026.3.17
 aiohttp
+python-telegram-bot[webhooks]
+python-dotenv
