@@ -54,8 +54,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Same rule — use /pickup in reply to a message, and the bot will send a pickup line as a reply. 😉\n"
         "/translate <msg> - it will translate any language and also hinglish msg in english lang.\n"
         "/talk <message> - Casanova repeats your message\n"
-        "Just chat normally - It may auto-reply like a human\n\n"
-        "For now auto reply is off for some reason \n\n"
+        "Just chat normally - Auto reply is off for now\n\n"
         "Tip: Reply to a message with /joke or /pickup to send it directly as a reply!"
     )
     await update.message.reply_text(help_text)
@@ -88,7 +87,8 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message.text.lower()
 
 
-   
+    if "hi" in msg or "hello" in msg:
+        await update.message.reply_text("Hey buddy, how’s it going?")
     elif "bye" in msg or "byy" in msg:
         await update.message.reply_text("leaving already? That was quick.")
     elif "lol" in msg or "lmao" in msg:
@@ -97,14 +97,19 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif "aven" in msg:
         await update.message.reply_text("Aven please reply bruh")
 
-    elif "hey" in msg or "hello" in msg:
+    elif "hey" in msg or "hyy" in msg:
         await update.message.reply_text("hey, wassup buddy")
 
     elif "casanova" in msg:
         await update.message.reply_text("Go on.. I've got your attention.")
+    elif "wassup" in msg or "hru" in msg or "wbu" in msg or "how are you" in msg:
+        await update.message.reply_text("I'm cool, wbu?")
 
     elif "gay" in msg or "you are gay" in msg:
          await update.message.reply_text("I'm lesbian - I like gurls.")
+
+    elif "fine" in msg:
+         await update.message.reply_text("Fine is good, but not exciting 😄 tell me something better.")
 
     elif "love" in msg:
          await update.message.reply_text("No-one loves you except me , Did you get that?")
