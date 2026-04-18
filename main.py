@@ -116,7 +116,7 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     else:
         # Random human-like reply from file (20% chance)
-        if random.randint(1, 10) <= 2:
+        if random.randint(1, 10) <= 1:
             try:
                 with open("replies.txt", "r", encoding="utf-8") as f:
                     human_replies = f.read().splitlines()
