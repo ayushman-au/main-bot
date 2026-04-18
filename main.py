@@ -11,6 +11,9 @@ import aiohttp
 with open("roasts.txt", "r", encoding="utf-8") as f:
     ROAST_LINES = f.read().splitlines()
 
+with open("replies.txt", "r", encoding="utf-8") as f:
+    HUMAN_REPLIES = f.read().splitlines()
+
 async def joke(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         async with aiohttp.ClientSession() as session:
@@ -82,53 +85,55 @@ async def pickup(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(f"{sender_name} says: {line}")
 
-
 async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    msg = update.message.text.lower()
+    # Safety check (very important)
+    if not update.message or not update.message.text:
+        return
 
+    msg = update.message.text.lower()
 
     if "hi" in msg or "hello" in msg:
         await update.message.reply_text("Hey buddy, how’s it going?")
+
     elif "bye" in msg or "byy" in msg:
-        await update.message.reply_text("leaving already? That was quick.")
+        await update.message.reply_text("Leaving already? That was quick.")
+
     elif "lol" in msg or "lmao" in msg:
-        await update.message.reply_text("Hahaahahah 😂")
+        await update.message.reply_text("Hahaha 😂")
 
     elif "aven" in msg:
         await update.message.reply_text("Aven please reply bruh")
 
     elif "hey" in msg or "hyy" in msg:
-        await update.message.reply_text("hey, wassup buddy")
+        await update.message.reply_text("Hey, what’s up?")
 
     elif "casanova" in msg:
-        await update.message.reply_text("Go on.. I've got your attention.")
+        await update.message.reply_text("Go on… I’ve got your attention.")
+
     elif "wassup" in msg or "hru" in msg or "wbu" in msg or "how are you" in msg:
-        await update.message.reply_text("I'm cool, wbu?")
+        await update.message.reply_text("I'm doing great, what about you?")
 
     elif "gay" in msg or "you are gay" in msg:
-         await update.message.reply_text("I'm lesbian - I like gurls.")
+        await update.message.reply_text("Nice try 😂")
 
     elif "fine" in msg:
-         await update.message.reply_text("Fine is good, but not exciting 😄 tell me something better.")
+        await update.message.reply_text("Fine is okay… but tell me something interesting 😄")
 
     elif "love" in msg:
-         await update.message.reply_text("No-one loves you except me , Did you get that?")
-    
+        await update.message.reply_text("Looks like someone is feeling emotional today ❤️")
+
     else:
-        # Random human-like reply from file (20% chance)
-        if random.randint(1, 10) <= 2:
+        # Random human-like reply (10% chance)
+        if random.randint(1, 10) <= 1:
             try:
-                with open("replies.txt", "r", encoding="utf-8") as f:
-                    human_replies = f.read().splitlines()
-                reply = random.choice(human_replies)
+                reply = random.choice(HUMAN_REPLIES)
                 await update.message.reply_text(reply)
             except Exception:
-                await update.message.reply_text("Bro, I’m speechless rn 😅")
+                await update.message.reply_text("I'm out of words right now 😅")
         else:
-            print(f"Casanova ignored: {msg}")
+            print(f"Ignored: {msg}")
 
-    
-
+          
 async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message.text.replace("/translate", "").strip()
 
@@ -152,29 +157,18 @@ async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"Error translating: {e}")
 
-
-
 async def roast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        # Try API first
-        async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.popcat.xyz/roast") as response:
-                if response.status == 200:
-                    data = await response.json()
-                    roast_line = data["roast"]
-                else:
-                    roast_line = random.choice(ROAST_LINES)
-    except Exception:
-        # If API fails → fallback to file
         roast_line = random.choice(ROAST_LINES)
+    except Exception:
+        roast_line = " Don't mess with me "
 
     if update.message.reply_to_message:
-        sender_name = update.message.from_user.first_name
-        text = f"{sender_name} says: {roast_line}"
+        target_name = update.message.reply_to_message.from_user.first_name
+        text = f"{target_name}, {roast_line}"
         await update.message.reply_to_message.reply_text(text)
     else:
         await update.message.reply_text(roast_line)
-
 
 async def compliment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     fallback_compliments = [
@@ -233,30 +227,27 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
 
 
 # Run bot
+PORT = int(os.environ.get("PORT", 8000))
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+
 if __name__ == "__main__":
     app = ApplicationBuilder().token(TOKEN).build()
-
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("talk", talk))
     app.add_handler(CommandHandler("joke", joke))
     app.add_handler(CommandHandler("pickup", pickup))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
-    app.add_error_handler(error_handler)
     app.add_handler(CommandHandler("translate", translate))
     app.add_handler(CommandHandler("roast", roast))
     app.add_handler(CommandHandler("compliment", compliment))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
+    app.add_error_handler(error_handler)
 
-    
-    #app.add_handler(CommandHandler("compliment", compliment))
-    
+    print("Casanova bot (webhook) is running...")
 
-
-
-
-    
-
-    print("Casanova bot is running...")
-    app.run_polling()
-    
-    
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        url_path=TOKEN,
+        webhook_url=f"{WEBHOOK_URL}/{TOKEN}"
+    )
