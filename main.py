@@ -8,6 +8,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import random  # add this import
 from telegram.ext import MessageHandler, filters
 import aiohttp
+from urllib.parse import quote
 with open("roasts.txt", "r", encoding="utf-8") as f:
     ROAST_LINES = f.read().splitlines()
 
@@ -38,6 +39,10 @@ async def joke(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # Load environment variables
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
+
+# 👇 YAHAN ADD KAR
+if not TOKEN:
+    raise ValueError("TOKEN not found in .env file")
 
 # /start command
 # /start command
@@ -124,7 +129,19 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
 
 async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    msg = update.message.text.replace("/translate", "").strip()
+    if update.message.reply_to_message:
+        replied = update.message.reply_to_message
+        
+        # Check if replied message has text
+        if replied.text:
+            msg = replied.text
+        elif replied.caption:  # for images/videos with caption
+            msg = replied.caption
+        else:
+            await update.message.reply_text("Where is text love day 😅")
+            return
+    else:
+        msg = update.message.text.replace("/translate", "").strip()
 
     if not msg:
         await update.message.reply_text("Bro, give me some text to translate 😅")
@@ -132,12 +149,13 @@ async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
         async with aiohttp.ClientSession() as session:
-            url = f"https://api.popcat.xyz/translate?to=en&text={msg}"
+            url = f"https://api.popcat.xyz/translate?to=en&text={quote(msg)}"
             async with session.get(url) as response:
                 if response.status == 200:
                     data = await response.json()
                     translated = data["translated"]
                     detected_lang = data.get("lang", "unknown")
+
                     await update.message.reply_text(
                         f"Detected language: {detected_lang}\nEnglish: {translated}"
                     )
