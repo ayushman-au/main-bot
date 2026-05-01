@@ -102,6 +102,9 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif "aven" in msg:
         await update.message.reply_text("Aven please reply bruh") 
 
+    elif "no cap" in msg:
+        await update.message.reply_text("Oh! that kashmiri guy , wassup?") 
+
     elif "casanova" in msg:
         await update.message.reply_text("Go on.. I've got your attention.")
     
